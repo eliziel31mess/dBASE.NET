@@ -1,10 +1,12 @@
 ﻿namespace dBASE.NET {
     using dBASE.NET.Encoders;
+    using dBASE.NET.V2;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
 
     /// <summary>
@@ -17,7 +19,7 @@
 
         public Dbf ParentDbf;
 
-        private List<DbfField> fields;
+        public List<DbfField> fields;
 
         internal DbfRecord(BinaryReader reader, DbfHeader header, List<DbfField> fields, byte[] memoData, Encoding encoding) {
             this.fields = fields;
@@ -186,5 +188,81 @@
                 Memoreader.Close();
             }
         }
+
+        #region Extends
+        /// <summary>
+        /// Return the index of the field by it's name.
+        /// </summary>
+        /// <param name="fieldName">Name of the field</param>
+        /// <returns></returns>
+        public int GetFieldIndex(string fieldName)
+        {
+            return fields.FindIndex(x => x.Name.Equals(fieldName));
+        }
+        public void FromEntity<T>(T obj)
+        {
+            var properties = GetDecoratedProperties(obj);
+
+            foreach (var property in properties)
+            {
+                var attribute = property.GetCustomAttribute(typeof(DbfFieldAttribute)) as DbfFieldAttribute;
+
+                if (attribute == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property {property.Name} does not have the DbfField attribute!"
+                    );
+                }
+
+                if (property.CanRead)
+                {
+                    Data[GetFieldIndex(attribute.Name)] = property.GetValue(obj);
+                }
+            }
+        }
+
+        public void ToEntity<T>(T obj)
+        {
+            var properties = GetDecoratedProperties(obj);
+
+            foreach (var property in properties)
+            {
+                var attribute = property.GetCustomAttribute(typeof(DbfFieldAttribute)) as DbfFieldAttribute;
+
+                if (attribute == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property {property.Name} does not have the DbfField attribute!"
+                    );
+                }
+
+                if (property.CanWrite)
+                {
+                    property.SetValue(obj, Data[GetFieldIndex(attribute.Name)]);
+                }
+            }
+        }
+
+        internal PropertyInfo[] GetDecoratedProperties(object obj)
+        {
+            var decoratedProperties = new List<PropertyInfo>();
+
+            var allProperties = obj.GetType().GetProperties();
+
+            foreach (var property in allProperties)
+            {
+                var attributes = property.GetCustomAttributes();
+                foreach (var attr in attributes)
+                {
+                    if (attr is DbfFieldAttribute)
+                    {
+                        decoratedProperties.Add(property);
+                    }
+                }
+            }
+
+            return decoratedProperties.ToArray();
+        }
+        #endregion
     }
 }
