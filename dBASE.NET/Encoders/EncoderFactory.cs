@@ -32,6 +32,8 @@ namespace dBASE.NET.Encoders
 					return NullFlagsEncoder.Instance;
 				case DbfFieldType.Numeric:
 					return NumericEncoder.Instance;
+				case DbfFieldType.Double:
+					return DoubleEncoder.Instance;
 				default:
 					throw new ArgumentException("No encoder found for dBASE type " + type);
 			}
