@@ -14,7 +14,10 @@
     <Authors>Independent Software / Alexander van Oostenrijk</Authors>
     <PackageId>dBASE.NET</PackageId>
     <PackageLicenseUrl>https://github.com/henck/dBASE.NET/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/henck/dBASE.NET</PackageProjectUrl>
+
+    <PackageProjectUrl>https://github.com/eliziel31mess/dBASE.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/eliziel31mess/dBASE.NET.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
       Fix reading DbfField from file with `invalid` name.
     </PackageReleaseNotes>
