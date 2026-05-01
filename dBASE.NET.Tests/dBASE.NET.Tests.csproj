@@ -70,9 +70,11 @@
     <Compile Include="Encoders\CharacterEncoderTests.cs" />
     <Compile Include="Encoders\DateEncoderTests.cs" />
     <Compile Include="Encoders\NumericEncoderTests.cs" />
+    <Compile Include="Examples\Maestro.cs" />
     <Compile Include="FoxProWithMemo.cs" />
     <Compile Include="VisualFoxPro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProsysTables.cs" />
     <Compile Include="VisualFoxProWithAI.cs" />
     <Compile Include="Writing.cs" />
   </ItemGroup>

@@ -48,7 +48,7 @@
         /// <inheritdoc />
         public object Decode(byte[] buffer, byte[] memoData, Encoding encoding)
         {
-            string text = encoding.GetString(buffer).Trim();
+            string text = encoding.GetString(buffer).TrimEnd();
             if (text.Length == 0) return null;
             return text;
         }
