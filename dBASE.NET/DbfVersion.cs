@@ -13,6 +13,7 @@ namespace dBASE.NET
 		FoxBaseDBase3NoMemo              = 0x03, // DONE
 		VisualFoxPro                     = 0x30, // DONE
 		VisualFoxProWithAutoIncrement    = 0x31, // DONE
+		VisualFoxProWithMemo             = 0x32, // DONE
 		dBase4SQLTableNoMemo             = 0x43,
 		dBase4SQLSystemNoMemo            = 0x63,
 		FoxBaseDBase3WithMemo            = 0x83, // DONE

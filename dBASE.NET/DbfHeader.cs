@@ -58,6 +58,9 @@ namespace dBASE.NET
 				case DbfVersion.VisualFoxProWithAutoIncrement:
 					header = new Dbf3Header();
 					break;
+				case DbfVersion.VisualFoxProWithMemo:
+					header = new Dbf3Header();
+					break;
 				case DbfVersion.FoxPro2WithMemo:
 					header = new Dbf3Header();
 					break;

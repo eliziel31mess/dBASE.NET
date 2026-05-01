@@ -27,7 +27,9 @@ namespace dBASE.NET.Encoders
 				case DbfFieldType.Logical:
 					return LogicalEncoder.Instance;
 				case DbfFieldType.Memo:
-					return MemoEncoder.Instance;
+						return MemoEncoder.Instance;
+					case DbfFieldType.Blob:
+						return BlobEncoder.Instance;
 				case DbfFieldType.NullFlags:
 					return NullFlagsEncoder.Instance;
 				case DbfFieldType.Numeric:
