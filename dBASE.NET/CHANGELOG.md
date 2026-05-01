@@ -2,6 +2,11 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.3] - 2026-05-01
+### Agregado
+- Se agrego README.md con información de la librería y su uso.
+- Se agrego CHANGELOG.md con el historial de cambios de la librería.
+
 ## [1.2.2.2] - 2026-05-01
 
 ### Agregado
