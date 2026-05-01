@@ -1,0 +1,23 @@
+# Changelog
+
+Todos los cambios notables en este proyecto serán documentados en este archivo.
+
+## [1.2.2.2] - 2026-05-01
+
+### Agregado
+- Posibilidad de leer campos Blob como tipo Byte[] donde usualmente se guardan fotos, imágenes, etc. Tambien corrección en lectura de campos Memo como string
+
+## [1.2.2.1] - 2026-04-30
+
+### Ajuste
+- Ajuste en los campos string para no eliminar los espacios en blanco al inicio de la cadena, se cambio Trim() por TrimEnd().
+
+---
+
+## [1.2.2] - 2025-01-01
+### Agregado
+- Se agrego DbfFieldAttribute para poder mapear los registros leidos
+- Tambien se agregaron la extensión de AddEntities() y GetEntities().
+
+---
+## [1.2.1] - Original
