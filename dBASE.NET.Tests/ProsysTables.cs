@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using dBASE.NET.Tests.Examples;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,6 +49,42 @@ namespace dBASE.NET.Tests
                 string filePath = Path.Combine(outputDir, $"{foto.Clave}.jpg");
                 File.WriteAllBytes(filePath, foto.FotoBytes);
             }
+
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
+        public void RelojCompañias()
+        {
+            var tbl = @"W:\RelojW\Actual\P26\CMP01_26.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.Compañia>(dbf.GetEntities<Examples.Compañia>());
+
+            string outputDir = @"W:\RelojW";
+            string filePath = Path.Combine(outputDir, $"Logo.jpg");
+            File.WriteAllBytes(filePath, entities[0].Logotipo);
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
+        public void NominaExpediente()
+        {
+            var tbl = @"Y:\ProsysW\proynom\p25\TRA05_25.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.Expediente>(dbf.GetEntities<Examples.Expediente>());
+
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
+        public void NominaAcumuladoFiscal()
+        {
+            var tbl = @"Y:\ProsysW\proynom\p25\NOM04T_25.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.AcumuladoFiscal>(dbf.GetEntities<Examples.AcumuladoFiscal>());
 
             Assert.IsNotNull(entities);
         }

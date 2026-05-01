@@ -70,6 +70,9 @@
     <Compile Include="Encoders\CharacterEncoderTests.cs" />
     <Compile Include="Encoders\DateEncoderTests.cs" />
     <Compile Include="Encoders\NumericEncoderTests.cs" />
+    <Compile Include="Examples\AcumuladoFiscal.cs" />
+    <Compile Include="Examples\Compañia.cs" />
+    <Compile Include="Examples\Expediente.cs" />
     <Compile Include="Examples\Foto.cs" />
     <Compile Include="Examples\Maestro.cs" />
     <Compile Include="FoxProWithMemo.cs" />

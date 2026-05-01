@@ -65,7 +65,7 @@
             return findMemo(index, memoData, encoding);
         }
 
-        private static string findMemo(int index, byte[] memoData, Encoding encoding)
+        private static object findMemo(int index, byte[] memoData, Encoding encoding)
         {
             // This is the original implementation of findMemo. It was found that
             // the LINQ methods are orders of magnitude slower than using using array
@@ -98,7 +98,40 @@
                 memoBytes[i - lengthToSkip] = memoData[i];
             }
 
-            return encoding.GetString(memoBytes).Trim();
+            if (IsBinaryContent(memoBytes))
+                return memoBytes;
+
+            return encoding.GetString(memoBytes).TrimEnd();
+        }
+
+        /// <summary>
+        /// Detects whether the raw memo bytes contain binary content by checking
+        /// well-known file format magic bytes (JPEG, PNG, BMP, GIF, PDF, ZIP, etc.).
+        /// </summary>
+        private static bool IsBinaryContent(byte[] data)
+        {
+            if (data == null || data.Length < 2) return false;
+
+            // JPEG: FF D8 FF
+            if (data.Length >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
+                return true;
+            // PNG: 89 50 4E 47
+            if (data.Length >= 4 && data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47)
+                return true;
+            // BMP: 42 4D
+            if (data[0] == 0x42 && data[1] == 0x4D)
+                return true;
+            // GIF: 47 49 46 38
+            if (data.Length >= 4 && data[0] == 0x47 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x38)
+                return true;
+            // PDF: 25 50 44 46
+            if (data.Length >= 4 && data[0] == 0x25 && data[1] == 0x50 && data[2] == 0x44 && data[3] == 0x46)
+                return true;
+            // ZIP / DOCX / XLSX: 50 4B 03 04
+            if (data.Length >= 4 && data[0] == 0x50 && data[1] == 0x4B && data[2] == 0x03 && data[3] == 0x04)
+                return true;
+
+            return false;
         }
     }
 }
