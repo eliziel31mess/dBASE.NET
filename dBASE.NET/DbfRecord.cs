@@ -21,12 +21,18 @@
 
         public List<DbfField> fields;
 
+        /// <summary>
+        /// Indicates whether this record is marked as deleted.
+        /// </summary>
+        public bool IsDeleted { get; private set; }
+
         internal DbfRecord(BinaryReader reader, DbfHeader header, List<DbfField> fields, byte[] memoData, Encoding encoding) {
             this.fields = fields;
             Data = new List<object>();
 
             // Read record marker.
             byte marker = reader.ReadByte();
+            IsDeleted = (marker == 0x2A);
 
             // Read entire record as sequence of bytes.
             // Note that record length includes marker.
@@ -118,8 +124,8 @@
             BinaryWriter Memowriter = null;
             BinaryReader Memoreader = null;
             int UsedBlocks = 0, BlockSize = 0, FreeBlockPointer = 0;
-            // Write marker (always "not deleted")
-            writer.Write((byte)0x20);
+            // Write marker (deleted flag)
+            writer.Write((byte)(IsDeleted ? 0x2A : 0x20));
 
             int index = 0;
             HasMemo = fields.Any(f => f.Type == DbfFieldType.Memo);

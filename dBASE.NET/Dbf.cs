@@ -295,6 +295,7 @@
             var entities = new List<T>();
             foreach (var record in Records)
             {
+                if (record.IsDeleted) continue;
                 var entity = (T)Activator.CreateInstance(typeof(T));
                 record.ToEntity(entity);
                 entities.Add(entity);
