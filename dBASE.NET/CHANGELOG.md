@@ -1,6 +1,9 @@
 # Changelog
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
+## [1.2.2.4] - 2026-05-04
+### Modificado
+- Se modifico la clase para ignorar los registros marcados como eliminados en una tabla.
 
 ## [1.2.2.3] - 2026-05-01
 ### Agregado
