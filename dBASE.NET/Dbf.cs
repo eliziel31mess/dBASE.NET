@@ -286,6 +286,41 @@
         }
 
         /// <summary>
+        /// Creates a deep copy of this <see cref="Dbf"/> instance, duplicating
+        /// the field schema and all records (including their data) into a new object.
+        /// Useful for recovering or re-saving a corrupted table without going through entities.
+        /// </summary>
+        /// <returns>A new <see cref="Dbf"/> with the same schema and data.</returns>
+        public Dbf Clone()
+        {
+            var clone = new Dbf(Encoding);
+
+            // Copy Language Driver ID so FoxPro does not ask for code page
+            clone.header.LanguageDriverId = header.LanguageDriverId;
+            clone.header.Version = header.Version;
+
+            // Copy field schema
+            foreach (var field in Fields)
+                clone.Fields.Add(new DbfField(field.Name, field.Type, field.Length, field.Precision)
+                {
+                    WorkAreaID = field.WorkAreaID,
+                    Flags = field.Flags
+                });
+
+            // Copy records (shallow-clone the Data list so the clone is independent)
+            foreach (var record in Records)
+            {
+                var newRecord = new DbfRecord(clone.Fields);
+                newRecord.IsDeleted = record.IsDeleted;
+                for (int i = 0; i < record.Data.Count && i < newRecord.Data.Count; i++)
+                    newRecord.Data[i] = record.Data[i];
+                clone.Records.Add(newRecord);
+            }
+
+            return clone;
+        }
+
+        /// <summary>
         /// Get records from the DBF mapped into entities.
         /// </summary>
         /// <typeparam name="T"></typeparam>

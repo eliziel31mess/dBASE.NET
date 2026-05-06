@@ -115,12 +115,15 @@ namespace dBASE.NET.Tests
         [TestMethod]
         public void TablaDañada()
         {
-            var tbl = @"K:\Afx\260204\NOM03_26 (2)\NOM03_26.DBF";
+            var tbl = @"K:\Afx\ToFix\DañadosOriginales\NOM03_26.DBF";
             dbf = new Dbf(Encoding.Default);
             dbf.Read(tbl);
+
+            // Clonar la tabla dañada a una nueva y guardarla
+            var clon = dbf.Clone();
+            clon.Write(@"K:\Afx\ToFix\NOM03_26_recuperado.DBF");
+
             var entities = new List<Examples.NominaProceso>(dbf.GetEntities<Examples.NominaProceso>());
-
-
             Assert.IsNotNull(entities);
         }
 

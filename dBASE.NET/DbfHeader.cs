@@ -44,7 +44,13 @@ namespace dBASE.NET
 		/// </summary>
 		public bool HasMemoField { get; set; }
 
-        public static DbfHeader CreateHeader(DbfVersion version)
+		/// <summary>
+		/// Language driver ID (code page marker). Byte 0x1D of the .dbf header.
+		/// Preserving this avoids FoxPro asking for code page when opening a cloned table.
+		/// </summary>
+		public byte LanguageDriverId { get; set; }
+
+		public static DbfHeader CreateHeader(DbfVersion version)
 		{
 			DbfHeader header;
 			switch(version)

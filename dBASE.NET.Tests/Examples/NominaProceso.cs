@@ -9,7 +9,7 @@ namespace dBASE.NET.Tests.Examples
 {
     public class NominaProceso
     {
-        [DbfField("NN301")] public string Trabajador { get; set; }
+        [DbfField("nn301")] public string Trabajador { get; set; }
         [DbfField("NN302")] public string Concepto { get; set; }
         [DbfField("NN303")] public double HorasDias01 { get; set; }
         [DbfField("NN304")] public double HorasDias02 { get; set; }
