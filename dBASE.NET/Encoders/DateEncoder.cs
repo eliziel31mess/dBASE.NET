@@ -18,7 +18,9 @@
         public byte[] Encode(DbfField field, object data, Encoding encoding)
         {
             string text;
-            if (data is DateTime dt)
+            // DateTime.MinValue (01/01/0001) comes from uninitialized structs or
+            // corrupted records – treat it as empty, same as null.
+            if (data is DateTime dt && dt != DateTime.MinValue)
             {
                 text = dt.ToString(format).PadLeft(field.Length, ' ');
             }

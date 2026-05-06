@@ -8,6 +8,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 - Opción de clonar una tabla de datos dbf, con esto podemos recuperar tablas dañadas
 - Se leen los campos Memo como null si estos aparecen dañados, esto para poder aun así mapear la tabla.
 - Se ignora el formato de CapitalSensitive en los nombres de los campos, esto para evitar problemas al mapear los campos con el atributo DbfFieldAttribute.
+- Posibilidad de clonar un dbf en caso de que este dañado, con esto se puede recuperar la información de tablas dañadas.
 
 ## [1.2.2.5] - 2026-05-05
 ### Ajuste
