@@ -17,7 +17,7 @@
             string text = "?";
             if (data != null)
             {
-                text = (bool)data == true ? "Y" : "N";
+                text = (bool)data == true ? "T" : "F";
             }
 
             // Grow string to fill field length.

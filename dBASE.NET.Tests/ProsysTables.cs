@@ -107,6 +107,9 @@ namespace dBASE.NET.Tests
             var tbl = @"Y:\ProsysW\NOMINA\P26\NOM04T_26.dbf";
             dbf = new Dbf(Encoding.Default);
             dbf.Read(tbl);
+
+            var clon = dbf.Clone();
+            clon.Write(@"Y:\ProsysW\NOMINA\P26\NOM04T_26_recuperado.dbf");
             var entities = new List<Examples.AcumuladoFiscal>(dbf.GetEntities<Examples.AcumuladoFiscal>());
 
             Assert.IsNotNull(entities);
@@ -125,6 +128,20 @@ namespace dBASE.NET.Tests
 
             var entities = new List<Examples.NominaProceso>(dbf.GetEntities<Examples.NominaProceso>());
             Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
+        public void CloneTablaDañada()
+        {
+            var tbl = @"K:\Victoreen\260416\NOM04T_26\NOM04T_26.DBF";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+
+            // Clonar la tabla dañada a una nueva y guardarla
+            var clon = dbf.Clone();
+            clon.Write(@"K:\Victoreen\260416\NOM04T_26\NOM04T_26_fixed.DBF");
+            
+            Assert.IsNotNull(clon);
         }
 
         [TestMethod]

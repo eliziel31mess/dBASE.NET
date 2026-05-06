@@ -2,9 +2,16 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.6] - 2026-05-06
+### Agregado
+- Leer tablas de datos dbf dañadas
+- Opción de clonar una tabla de datos dbf, con esto podemos recuperar tablas dañadas
+- Se leen los campos Memo como null si estos aparecen dañados, esto para poder aun así mapear la tabla.
+- Se ignora el formato de CapitalSensitive en los nombres de los campos, esto para evitar problemas al mapear los campos con el atributo DbfFieldAttribute.
+
 ## [1.2.2.5] - 2026-05-05
 ### Ajuste
-- Se ajusto la lectura de campos Memo para la correcta lectura de campos string o campos by[]
+- Se ajusto la lectura de campos Memo para la correcta lectura de campos string o campos byte[]
 
 ## [1.2.2.4] - 2026-05-04
 ### Modificado
