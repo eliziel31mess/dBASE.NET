@@ -97,12 +97,6 @@ namespace dBASE.NET.Extensions
             return $"Incompatibilidades en el mapeo de {typeof(T).Name}:{Environment.NewLine}{sb}";
         }
 
-        /// <summary>
-        ///  Gets List of entities of type T from the DBF, mapping fields to properties based on <see cref="DbfFieldAttribute.Name"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbf"></param>
-        /// <returns></returns>
         public static IEnumerable<T> SafeGetEntities<T>(this dBASE.NET.Dbf dbf) where T : class, new()
         {
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
