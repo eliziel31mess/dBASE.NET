@@ -27,6 +27,7 @@
 
             // Read record marker.
             byte marker = reader.ReadByte();
+            IsDeleted = marker == 0x2A;
 
             // Read entire record as sequence of bytes.
             // Note that record length includes marker.
@@ -57,6 +58,7 @@
         }
 
         public List<object> Data { get; }
+        public bool IsDeleted { get; internal set; }
 
         public object this[int index] => Data[index];
 

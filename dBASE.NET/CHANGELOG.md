@@ -2,6 +2,10 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.4] - 2026-05-05
+### Ajuste
+- Se ajusto la lectura de campos Memo para la correcta lectura de campos string o campos by[]
+
 ## [1.2.2.3] - 2026-05-01
 ### Agregado
 - Se agrego README.md con información de la librería y su uso.

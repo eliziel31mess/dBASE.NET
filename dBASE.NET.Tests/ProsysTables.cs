@@ -88,5 +88,27 @@ namespace dBASE.NET.Tests
 
             Assert.IsNotNull(entities);
         }
+
+        [TestMethod]
+        public void NominaAcumuladoFiscalTricky()
+        {
+            var tbl = @"M:\ProsysW\spgnomina\P26\NOM04T_26.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.AcumuladoFiscal>(dbf.GetEntities<Examples.AcumuladoFiscal>());
+
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
+        public void EmpresasTricky()
+        {
+            var tbl = @"M:\ProsysW\PROSYS.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.Empresa>(dbf.GetEntities<Examples.Empresa>());
+
+            Assert.IsNotNull(entities);
+        }
     }
 }

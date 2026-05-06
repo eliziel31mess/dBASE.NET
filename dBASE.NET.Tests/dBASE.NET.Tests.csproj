@@ -72,6 +72,8 @@
     <Compile Include="Encoders\NumericEncoderTests.cs" />
     <Compile Include="Examples\AcumuladoFiscal.cs" />
     <Compile Include="Examples\Compañia.cs" />
+    <Compile Include="Examples\Empresa.cs" />
+    <Compile Include="Examples\EmpresaDto.cs" />
     <Compile Include="Examples\Expediente.cs" />
     <Compile Include="Examples\Foto.cs" />
     <Compile Include="Examples\Maestro.cs" />

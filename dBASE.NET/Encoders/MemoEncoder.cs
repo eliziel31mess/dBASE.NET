@@ -107,29 +107,52 @@
         /// <summary>
         /// Detects whether the raw memo bytes contain binary content by checking
         /// well-known file format magic bytes (JPEG, PNG, BMP, GIF, PDF, ZIP, etc.).
+        /// Also guards against false positives when the content is printable text
+        /// (e.g. base64 strings that happen to start with "BM").
+        ///
+        /// Distinguishes real binary files from text by checking for non-printable
+        /// bytes immediately after the magic signature. Real binary headers (BMP,
+        /// JPEG, etc.) have null bytes / control chars within the first few bytes
+        /// past the signature, while base64 text does not.
         /// </summary>
         private static bool IsBinaryContent(byte[] data)
         {
             if (data == null || data.Length < 2) return false;
 
+            int signatureLen = 0;
+
             // JPEG: FF D8 FF
             if (data.Length >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
-                return true;
+                signatureLen = 3;
             // PNG: 89 50 4E 47
-            if (data.Length >= 4 && data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47)
-                return true;
+            else if (data.Length >= 4 && data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47)
+                signatureLen = 4;
             // BMP: 42 4D
-            if (data[0] == 0x42 && data[1] == 0x4D)
-                return true;
+            else if (data[0] == 0x42 && data[1] == 0x4D)
+                signatureLen = 2;
             // GIF: 47 49 46 38
-            if (data.Length >= 4 && data[0] == 0x47 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x38)
-                return true;
+            else if (data.Length >= 4 && data[0] == 0x47 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x38)
+                signatureLen = 4;
             // PDF: 25 50 44 46
-            if (data.Length >= 4 && data[0] == 0x25 && data[1] == 0x50 && data[2] == 0x44 && data[3] == 0x46)
-                return true;
+            else if (data.Length >= 4 && data[0] == 0x25 && data[1] == 0x50 && data[2] == 0x44 && data[3] == 0x46)
+                signatureLen = 4;
             // ZIP / DOCX / XLSX: 50 4B 03 04
-            if (data.Length >= 4 && data[0] == 0x50 && data[1] == 0x4B && data[2] == 0x03 && data[3] == 0x04)
-                return true;
+            else if (data.Length >= 4 && data[0] == 0x50 && data[1] == 0x4B && data[2] == 0x03 && data[3] == 0x04)
+                signatureLen = 4;
+
+            if (signatureLen == 0) return false;
+
+            // Check the bytes right after the signature for non-printable content.
+            // Real binary files have nulls/control chars within the next few bytes;
+            // base64 text does not (all chars are printable ASCII).
+            int probeLen = Math.Min(data.Length, signatureLen + 16);
+            for (int i = signatureLen; i < probeLen; i++)
+            {
+                byte b = data[i];
+                bool isPrintable = (b >= 0x20 && b <= 0x7E) || b == 0x09 || b == 0x0A || b == 0x0D;
+                if (!isPrintable)
+                    return true;
+            }
 
             return false;
         }
