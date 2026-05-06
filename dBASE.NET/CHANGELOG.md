@@ -2,6 +2,11 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.6.1] - 2026-05-06
+### Agregado
+- Extensión de la clase Dbf para poder obtener de forma segura unicamente los registros que no están marcados como eliminados, esto para evitar problemas al mapear los registros con el atributo DbfFieldAttribute.
+- Extensión de la clase Dbf para validar primeramente que los valores del mapeo sean correctos con respecto a la tabla original
+
 ## [1.2.2.6] - 2026-05-06
 ### Agregado
 - Leer tablas de datos dbf dañadas
