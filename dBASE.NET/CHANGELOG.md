@@ -2,6 +2,12 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.8] - 2026-05-06
+### Agregado
+- Agregado al objeto Dbf la propiedad IsCorrupted para saber si esta dañado
+- Agregado al objeto Dbf el método Repair() para clonar un dbf, esto para poder recuperar tablas dañadas
+
+
 ## [1.2.2.7] - 2026-05-06
 ### Agregado
 - Extensión de la clase Dbf para poder obtener de forma segura únicamente los registros que no están marcados como eliminados, esto para evitar problemas al mapear los registros con el atributo DbfFieldAttribute.

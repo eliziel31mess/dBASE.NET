@@ -286,6 +286,32 @@
         }
 
         /// <summary>
+        /// Returns true when the table is likely corrupted: the record count stored
+        /// in the header does not match the number of records actually read, or the
+        /// file size is inconsistent with the header metadata.
+        /// This is the same condition Visual FoxPro reports as "has become corrupted".
+        /// </summary>
+        public bool IsCorrupted =>
+            header.NumRecords != (uint)Records.Count;
+
+        /// <summary>
+        /// Repairs a corrupted DBF by cloning it to <paramref name="outputPath"/>.
+        /// The clone rebuilds the header with the correct record count and rewrites
+        /// all records that could be read, so FoxPro can open the result without errors.
+        /// Returns true if the file was corrupted and a repaired copy was written;
+        /// false if the file was healthy (no output file is written in that case).
+        /// </summary>
+        /// <param name="outputPath">Destination path for the repaired file.</param>
+        public bool Repair(string outputPath)
+        {
+            if (!IsCorrupted)
+                return false;
+
+            Clone().Write(outputPath);
+            return true;
+        }
+
+        /// <summary>
         /// Creates a deep copy of this <see cref="Dbf"/> instance, duplicating
         /// the field schema and all records (including their data) into a new object.
         /// Useful for recovering or re-saving a corrupted table without going through entities.

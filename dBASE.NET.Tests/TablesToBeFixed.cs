@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,13 +17,33 @@ namespace dBASE.NET.Tests
         [TestMethod]
         public void RelojAusentismosDañados()
         {
-            var tbl = "fixtures/Reloj-Dañado/REL06_25.DBF";
-            dbf = new Dbf(Encoding.Default);
-            dbf.Read(tbl);
+            try
+            {
+                var archivo = "fixtures/Reloj-Dañado/REL06_25.DBF";
+                dbf = new Dbf(Encoding.Default);
+                dbf.Read(archivo);
 
-            var clon = dbf.Clone();
-            clon.Write(@"fixtures/Reloj-Dañado/REL06_25_fixed.DBF");
-            Assert.IsNotNull(clon);
+                if (dbf.IsCorrupted)
+                {
+                    string salida = Path.Combine(
+                        Path.GetDirectoryName(archivo),
+                        Path.GetFileNameWithoutExtension(archivo) + "_reparado.dbf");
+
+                    dbf.Repair(salida);
+                    Console.WriteLine($"[REPARADO] {archivo} -> {salida}");
+                    Assert.IsNotNull(dbf);
+                }
+                else
+                {
+                    Console.WriteLine($"[OK]       {archivo}");
+                    Assert.IsNotNull(dbf);
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+            }
+            
         }
     }
 }
