@@ -203,7 +203,14 @@
         /// <returns></returns>
         public int GetFieldIndex(string fieldName)
         {
-            return fields.FindIndex(x => x.Name.Equals(fieldName));
+            if (string.IsNullOrEmpty(fieldName)) return -1;
+            // Use OrdinalIgnoreCase so that corrupted tables with mixed-case field
+            // names (e.g. "Nt401" instead of "NT401") still map correctly.
+            // Also trim both sides to guard against stray whitespace/null chars.
+            string normalized = fieldName.Trim();
+            int index = fields.FindIndex(x =>
+                string.Compare(x.Name.Trim(), normalized, StringComparison.OrdinalIgnoreCase) == 0);
+            return index;
         }
         public void FromEntity<T>(T obj)
         {
@@ -222,7 +229,11 @@
 
                 if (property.CanRead)
                 {
-                    Data[GetFieldIndex(attribute.Name)] = property.GetValue(obj);
+                    int fieldIndex = GetFieldIndex(attribute.Name);
+                    if (fieldIndex < 0 || fieldIndex >= Data.Count)
+                        continue;
+
+                    Data[fieldIndex] = property.GetValue(obj);
                 }
             }
         }
@@ -244,7 +255,11 @@
 
                 if (property.CanWrite)
                 {
-                    property.SetValue(obj, Data[GetFieldIndex(attribute.Name)]);
+                    int fieldIndex = GetFieldIndex(attribute.Name);
+                    if (fieldIndex < 0 || fieldIndex >= Data.Count)
+                        continue;
+
+                    property.SetValue(obj, Data[fieldIndex]);
                 }
             }
         }

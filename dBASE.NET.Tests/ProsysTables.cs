@@ -113,6 +113,18 @@ namespace dBASE.NET.Tests
         }
 
         [TestMethod]
+        public void TablaDañada()
+        {
+            var tbl = @"K:\Afx\260204\NOM03_26 (2)\NOM03_26.DBF";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.NominaProceso>(dbf.GetEntities<Examples.NominaProceso>());
+
+
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
         public void EmpresasTricky()
         {
             var tbl = @"M:\ProsysW\PROSYS.dbf";
