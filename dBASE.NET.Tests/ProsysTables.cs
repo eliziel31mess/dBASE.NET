@@ -28,7 +28,8 @@ namespace dBASE.NET.Tests
         [TestMethod]
         public void RelojFotos()
         {
-            var tbl = @"W:\RelojW\Actual\P26\RTL02_26.dbf";
+            //var tbl = @"W:\RelojW\Actual\P26\RTL02_26.dbf";
+            var tbl = @"M:\RelojW\guanajuato\actual_spg\P26\RTL02_26.dbf";
             dbf = new Dbf(Encoding.Default);
             dbf.Read(tbl);
             //foreach (var record in dbf.Records)
