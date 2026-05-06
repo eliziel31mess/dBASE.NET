@@ -90,8 +90,15 @@
                 },
                 0);
 
-            byte[] memoBytes = new byte[length];
             int lengthToSkip = index * blockSize + 8;
+
+            // Guard against corrupted memo files (e.g. FoxPro reports "missing or invalid").
+            // If the computed offset + length exceeds the actual data buffer, the record is
+            // unreadable; return null instead of throwing IndexOutOfRangeException.
+            if (lengthToSkip < 0 || length < 0 || lengthToSkip + length > memoData.Length)
+                return null;
+
+            byte[] memoBytes = new byte[length];
 
             for (int i = lengthToSkip; i < lengthToSkip + length; ++i)
             {

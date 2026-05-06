@@ -102,6 +102,17 @@ namespace dBASE.NET.Tests
         }
 
         [TestMethod]
+        public void NominaAcumuladoFiscalDañado()
+        {
+            var tbl = @"Y:\ProsysW\NOMINA\P26\NOM04T_26.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.AcumuladoFiscal>(dbf.GetEntities<Examples.AcumuladoFiscal>());
+
+            Assert.IsNotNull(entities);
+        }
+
+        [TestMethod]
         public void EmpresasTricky()
         {
             var tbl = @"M:\ProsysW\PROSYS.dbf";
