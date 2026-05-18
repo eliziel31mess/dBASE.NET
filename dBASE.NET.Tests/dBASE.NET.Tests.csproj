@@ -75,6 +75,7 @@
     <Compile Include="Examples\Empresa.cs" />
     <Compile Include="Examples\EmpresaDto.cs" />
     <Compile Include="Examples\Expediente.cs" />
+    <Compile Include="Examples\Falta.cs" />
     <Compile Include="Examples\Foto.cs" />
     <Compile Include="Examples\Maestro.cs" />
     <Compile Include="Examples\NominaProceso.cs" />
@@ -291,6 +292,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fixtures\Nomina-Acum-Dañado\" />
+    <Folder Include="fixtures\RelojDateTimeNull\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

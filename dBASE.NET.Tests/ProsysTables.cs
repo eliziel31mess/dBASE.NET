@@ -154,5 +154,16 @@ namespace dBASE.NET.Tests
 
             Assert.IsNotNull(entities);
         }
+
+        [TestMethod]
+        public void CampoFechaNull()
+        {
+            var tbl = @"C:\@Github\dBASE.NET\dBASE.NET.Tests\fixtures\RelojDateTimeNull\REL06_26.dbf";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.Falta>(dbf.GetEntities<Examples.Falta>());
+
+            Assert.IsNotNull(entities);
+        }
     }
 }

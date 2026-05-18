@@ -35,9 +35,12 @@
         /// <inheritdoc />
         public object Decode(byte[] buffer, byte[] memoData, Encoding encoding)
         {
-            string text = encoding.GetString(buffer).Trim();
+            // Corrupted tables may store null bytes (\0) instead of spaces — strip both.
+            string text = encoding.GetString(buffer).Trim().Trim('\0');
             if (text.Length == 0) return null;
-            return DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+            if (DateTime.TryParseExact(text, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+                return result;
+            return null;
         }
     }
 }
