@@ -2,6 +2,10 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2.2.10] - 2026-08-13
+### Arreglado
+- Se arreglo un detalle que al momento de tener una clase con double y en la base de datos tener un Integer no haya conflicto.
+
 ## [1.2.2.9] - 2026-05-18
 ### Arreglado
 - Se arreglo un error al leer tablas con valores 'null' con formato "\0" ya que en campos fecha o campos numéricos esto causaba un error al intentar convertir el valor a su tipo correspondiente, ahora se asigna el valor null a estos campos para evitar este error.

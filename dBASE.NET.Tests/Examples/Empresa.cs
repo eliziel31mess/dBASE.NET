@@ -47,7 +47,7 @@ namespace dBASE.NET.Tests.Examples
         [DbfField("EMP31")] public string CampoExtra04Desc { set; get; }
         [DbfField("EMP32")] public string CampoExtra05Desc { set; get; }
 
-        [DbfField("EMP33")] public int Año { set; get; }
+        [DbfField("EMP33")] public double Año { set; get; }
         [DbfField("EMP34")] public string RepresentantePatronal { set; get; }
         [DbfField("EMP35")] public string PuestoRepresentante { set; get; }
         [DbfField("EMP36")] public string RfcDelRepresentante { set; get; }

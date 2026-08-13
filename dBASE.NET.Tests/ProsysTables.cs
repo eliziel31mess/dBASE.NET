@@ -1,4 +1,5 @@
 ﻿using dBASE.NET.Tests.Examples;
+using dBASE.NET.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -147,14 +148,37 @@ namespace dBASE.NET.Tests
         [TestMethod]
         public void EmpresasTricky()
         {
-            var tbl = @"M:\ProsysW\PROSYS.dbf";
+            var tbl = @"N:\ProsysW\PROSYS.dbf";
             dbf = new Dbf(Encoding.Default);
             dbf.Read(tbl);
             var entities = new List<Examples.Empresa>(dbf.GetEntities<Examples.Empresa>());
 
             Assert.IsNotNull(entities);
         }
+        [TestMethod]
+        public void ValidateEmpresaTable()
+        {
+            var tbl = @"N:\ProsysW\PROSYS.dbf";
+            var dbf = new dBASE.NET.Dbf(Encoding.GetEncoding(1252));
+            using (var fs = new FileStream(tbl, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                var fptPath = Path.ChangeExtension(tbl, ".fpt");
+                if (File.Exists(fptPath))
+                {
+                    using (var ms = new FileStream(fptPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        dbf.Read(fs, ms);
+                }
+                else
+                {
+                    dbf.Read(fs);
+                }
+            }
 
+            var errores = dbf.ValidateEntityMapping<Examples.Empresa>();
+            if (errores != null)
+                throw new InvalidOperationException(errores);
+            // o simplemente: Debug.WriteLine(errores);
+        }
         [TestMethod]
         public void CampoFechaNull()
         {

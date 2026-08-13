@@ -21,7 +21,8 @@ namespace dBASE.NET.Extensions
             { 'F', new[] { typeof(double), typeof(float), typeof(decimal) } },
             { 'D', new[] { typeof(DateTime) } },
             { 'T', new[] { typeof(DateTime) } },
-            { 'I', new[] { typeof(int), typeof(long) } },
+            // integer can be widened losslessly to double/decimal (and float) via Convert.ChangeType
+            { 'I', new[] { typeof(int), typeof(long), typeof(double), typeof(decimal), typeof(float) } },
             { 'B', new[] { typeof(double) } },
             { 'M', new[] { typeof(byte[]), typeof(string) } },
             { 'G', new[] { typeof(byte[]) } },
