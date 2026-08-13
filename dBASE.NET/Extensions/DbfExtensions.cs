@@ -47,12 +47,22 @@ namespace dBASE.NET.Extensions
 
         /// <summary>
         /// Validates that the C# entity properties decorated with <see cref="DbfFieldAttribute"/>
-        /// are compatible with the actual DBF field types. Returns null when everything is correct,
-        /// or a descriptive string listing every mismatch found.
+        /// are compatible with the actual DBF field types. Returns null when there are no errors;
+        /// warnings alone are not considered a failure. Otherwise returns a descriptive string
+        /// listing every mismatch (and any warnings) found.
         /// </summary>
         public static string ValidateEntityMapping<T>(this dBASE.NET.Dbf dbf) where T : class, new()
+            => ValidateEntityMapping<T>(dbf, out _);
+
+        /// <summary>
+        /// Same as <see cref="ValidateEntityMapping{T}(dBASE.NET.Dbf)"/> but also surfaces the
+        /// non-blocking warnings so callers can log or inspect them without treating them as a failure.
+        /// </summary>
+        public static string ValidateEntityMapping<T>(this dBASE.NET.Dbf dbf, out IReadOnlyList<string> warnings) where T : class, new()
         {
-            var sb = new StringBuilder();
+            var errors = new List<string>();
+            var warningsList = new List<string>();
+            warnings = warningsList;
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             // Index DBF fields by name for quick lookup
@@ -67,7 +77,7 @@ namespace dBASE.NET.Extensions
 
                 if (!dbfFieldsByName.TryGetValue(attr.Name, out var dbfField))
                 {
-                    sb.AppendLine($"  [{attr.Name}] -> campo no encontrado en el DBF  (propiedad: {prop.Name} {prop.PropertyType.Name})");
+                    errors.Add($"  [{attr.Name}] -> campo no encontrado en el DBF  (propiedad: {prop.Name} {prop.PropertyType.Name})");
                     continue;
                 }
 
@@ -76,7 +86,7 @@ namespace dBASE.NET.Extensions
 
                 if (!_dbfTypeMap.TryGetValue(dbfType, out Type[] expected))
                 {
-                    sb.AppendLine($"  [{attr.Name}] tipo DBF '{dbfType}' desconocido  (propiedad: {prop.Name} {prop.PropertyType.Name})");
+                    errors.Add($"  [{attr.Name}] tipo DBF '{dbfType}' desconocido  (propiedad: {prop.Name} {prop.PropertyType.Name})");
                     continue;
                 }
 
@@ -84,18 +94,28 @@ namespace dBASE.NET.Extensions
                 if (!compatible)
                 {
                     string expectedNames = string.Join(" | ", Array.ConvertAll(expected, t => t.Name));
-                    sb.AppendLine($"  [ERROR]   [{attr.Name}] DBF tipo '{dbfType}' no es compatible con <{propType.Name}> en '{prop.Name}'. Tipos válidos: <{expectedNames}>");
+                    errors.Add($"  [ERROR]   [{attr.Name}] DBF tipo '{dbfType}' no es compatible con <{propType.Name}> en '{prop.Name}'. Tipos válidos: <{expectedNames}>");
                 }
                 else if (_dbfNativeType.TryGetValue(dbfType, out Type nativeType) && nativeType != propType)
                 {
-                    sb.AppendLine($"  [AVISO]   [{attr.Name}] DBF tipo '{dbfType}' retorna <{nativeType.Name}> en runtime; '{prop.Name}' es <{propType.Name}> (se aplicará Convert.ChangeType)");
+                    warningsList.Add($"  [AVISO]   [{attr.Name}] DBF tipo '{dbfType}' retorna <{nativeType.Name}> en runtime; '{prop.Name}' es <{propType.Name}> (se aplicará Convert.ChangeType)");
                 }
             }
 
-            if (sb.Length == 0)
+            if (errors.Count == 0)
                 return null;
 
-            return $"Incompatibilidades en el mapeo de {typeof(T).Name}:{Environment.NewLine}{sb}";
+            var sb = new StringBuilder($"Incompatibilidades en el mapeo de {typeof(T).Name}:{Environment.NewLine}");
+            foreach (var error in errors)
+                sb.AppendLine(error);
+            if (warningsList.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("Avisos (no bloqueantes):");
+                foreach (var warning in warningsList)
+                    sb.AppendLine(warning);
+            }
+            return sb.ToString();
         }
 
         public static IEnumerable<T> SafeGetEntities<T>(this dBASE.NET.Dbf dbf) where T : class, new()

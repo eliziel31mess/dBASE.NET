@@ -3,6 +3,7 @@ using dBASE.NET.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -174,10 +175,11 @@ namespace dBASE.NET.Tests
                 }
             }
 
-            var errores = dbf.ValidateEntityMapping<Examples.Empresa>();
+            var errores = dbf.ValidateEntityMapping<Examples.Empresa>(out var avisos);
             if (errores != null)
                 throw new InvalidOperationException(errores);
-            // o simplemente: Debug.WriteLine(errores);
+            foreach (var aviso in avisos)
+                Debug.WriteLine(aviso);
         }
         [TestMethod]
         public void CampoFechaNull()
