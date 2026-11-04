@@ -19,8 +19,9 @@
             // Null values result in zeroes.
             if (data == null) return new byte[field.Length];
 
-            // The date gets encoded as a Julian Day.
+            // DateTime.MinValue (01/01/0001) is treated as empty/null.
             DateTime dt = (DateTime)data;
+            if (dt == DateTime.MinValue) return new byte[field.Length];
             ulong date = DateToJulian(dt);
 
             // The time gets encoded as number of milliseconds since midnight.

@@ -55,13 +55,14 @@
         /// <inheritdoc />
         public object Decode(byte[] buffer, byte[] memoData, Encoding encoding)
         {
-            string text = encoding.GetString(buffer).Trim();
+            string text = encoding.GetString(buffer).Trim().Trim('\0');
             if (text.Length == 0)
-            {
                 return null;
-            }
 
-            return Convert.ToDouble(text, CultureInfo.InvariantCulture);
+            if (double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
+                return result;
+
+            return null;
         }
     }
 }

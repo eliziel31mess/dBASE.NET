@@ -21,6 +21,7 @@ namespace dBASE.NET
 		Integer = 'I',
 		Logical = 'L',
 		Memo = 'M',
+		Blob = 'W',
 		General = 'G',
 		Picture = 'P',
 		NullFlags = '0'

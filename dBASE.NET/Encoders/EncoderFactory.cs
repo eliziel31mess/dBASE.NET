@@ -27,11 +27,15 @@ namespace dBASE.NET.Encoders
 				case DbfFieldType.Logical:
 					return LogicalEncoder.Instance;
 				case DbfFieldType.Memo:
-					return MemoEncoder.Instance;
+						return MemoEncoder.Instance;
+					case DbfFieldType.Blob:
+						return BlobEncoder.Instance;
 				case DbfFieldType.NullFlags:
 					return NullFlagsEncoder.Instance;
 				case DbfFieldType.Numeric:
 					return NumericEncoder.Instance;
+				case DbfFieldType.Double:
+					return DoubleEncoder.Instance;
 				default:
 					throw new ArgumentException("No encoder found for dBASE type " + type);
 			}

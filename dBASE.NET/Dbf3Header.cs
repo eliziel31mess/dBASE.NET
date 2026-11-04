@@ -20,7 +20,9 @@ namespace dBASE.NET
 			NumRecords = reader.ReadUInt32();
 			HeaderLength = reader.ReadUInt16();
 			RecordLength = reader.ReadUInt16();
-			reader.ReadBytes(20); // Skip rest of header.
+			// Reserved 20 bytes (0x0C-0x1F). Byte at offset 0x1D (index 17) is the Language Driver ID.
+			byte[] reserved = reader.ReadBytes(20);
+			LanguageDriverId = reserved[17]; // 0x1D = code page marker
 		}
 
 		internal override void Write(BinaryWriter writer, List<DbfField> fields, List<DbfRecord> records)
@@ -56,17 +58,19 @@ namespace dBASE.NET
             writer.Write((byte)(LastUpdate.Day));           // 0x03 DD
             writer.Write(NumRecords);                       // 0x04 - 0x007 Number of records
             writer.Write(HeaderLength);                     // 0x08 - 0x09 Position of first data record
-            writer.Write(RecordLength);                     // 0x0A - 0x0B Length of one data record including delete flag
-            for (int i = 0; i < 16; i++) writer.Write((byte)0); // 0x0C - 0x1B Reserved
+			writer.Write(RecordLength);                     // 0x0A - 0x0B Length of one data record including delete flag
+			for (int i = 0; i < 16; i++) writer.Write((byte)0); // 0x0C - 0x1B Reserved
 															// Visual foxpro
-            writer.Write((byte)tableFlag);					// 0x1C Table flags
+			writer.Write((byte)tableFlag);					// 0x1C Table flags
 															// Values:
 															// 0x01 file has a structural .cdx
 															// 0x02 file has a Memo field (.fpt file)
 															// 0x04 file is a database (.dbc)
 															// This byte can contain the sum of any of the above values.
 															// For example, the value 0x03 indicates the table has a structural .cdx and a Memo field.
-            for (int i = 0; i < 3; i++) writer.Write((byte)0);
+			writer.Write(LanguageDriverId);                 // 0x1D Language Driver ID (code page marker)
+			writer.Write((byte)0);                          // 0x1E Reserved
+			writer.Write((byte)0);                          // 0x1F Reserved
 		}
 	}
 }

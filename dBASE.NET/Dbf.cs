@@ -123,7 +123,7 @@
 
             using (FileStream stream = File.Open(path, FileMode.Create, FileAccess.Write)) {
                 bool Hasmemo = false;
-                for(int i=0; i < Fields.Count && !Hasmemo; i++) {
+                for (int i = 0; i < Fields.Count && !Hasmemo; i++) {
                     Hasmemo = Fields[i].Type == DbfFieldType.Memo;
                 }
                 header.HasMemoField = Hasmemo;
@@ -248,5 +248,123 @@
             }
             return memoPath;
         }
+
+
+
+        #region Extends
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public DbfRecord CreateRecord<T>(T entity)
+        {
+            var record = CreateRecord();
+            record.FromEntity(entity);
+            return record;
+        }
+
+        /// <summary>
+        /// Add a list of entities to the DBF.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public IEnumerable<DbfRecord> AddEntities<T>(IEnumerable<T> entities)
+        {
+            var records = new List<DbfRecord>();
+
+            foreach (var entity in entities)
+            {
+                var record = CreateRecord();
+                record.FromEntity(entity);
+                records.Add(CreateRecord(entity));
+            }
+
+            return records;
+        }
+
+        /// <summary>
+        /// Returns true when the table is likely corrupted: the record count stored
+        /// in the header does not match the number of records actually read, or the
+        /// file size is inconsistent with the header metadata.
+        /// This is the same condition Visual FoxPro reports as "has become corrupted".
+        /// </summary>
+        public bool IsCorrupted =>
+            header.NumRecords != (uint)Records.Count;
+
+        /// <summary>
+        /// Repairs a corrupted DBF by cloning it to <paramref name="outputPath"/>.
+        /// The clone rebuilds the header with the correct record count and rewrites
+        /// all records that could be read, so FoxPro can open the result without errors.
+        /// Returns true if the file was corrupted and a repaired copy was written;
+        /// false if the file was healthy (no output file is written in that case).
+        /// </summary>
+        /// <param name="outputPath">Destination path for the repaired file.</param>
+        public bool Repair(string outputPath)
+        {
+            if (!IsCorrupted)
+                return false;
+
+            Clone().Write(outputPath);
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a deep copy of this <see cref="Dbf"/> instance, duplicating
+        /// the field schema and all records (including their data) into a new object.
+        /// Useful for recovering or re-saving a corrupted table without going through entities.
+        /// </summary>
+        /// <returns>A new <see cref="Dbf"/> with the same schema and data.</returns>
+        public Dbf Clone()
+        {
+            var clone = new Dbf(Encoding);
+
+            // Copy Language Driver ID so FoxPro does not ask for code page
+            clone.header.LanguageDriverId = header.LanguageDriverId;
+            clone.header.Version = header.Version;
+
+            // Copy field schema
+            foreach (var field in Fields)
+                clone.Fields.Add(new DbfField(field.Name, field.Type, field.Length, field.Precision)
+                {
+                    WorkAreaID = field.WorkAreaID,
+                    Flags = field.Flags
+                });
+
+            // Copy records (shallow-clone the Data list so the clone is independent)
+            foreach (var record in Records)
+            {
+                var newRecord = new DbfRecord(clone.Fields);
+                newRecord.IsDeleted = record.IsDeleted;
+                for (int i = 0; i < record.Data.Count && i < newRecord.Data.Count; i++)
+                    newRecord.Data[i] = record.Data[i];
+                clone.Records.Add(newRecord);
+            }
+
+            return clone;
+        }
+
+        /// <summary>
+        /// Get records from the DBF mapped into entities.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetEntities<T>()
+        {
+            var entities = new List<T>();
+            foreach (var record in Records)
+            {
+                if (record.IsDeleted) continue;
+                var entity = (T)Activator.CreateInstance(typeof(T));
+                record.ToEntity(entity);
+                entities.Add(entity);
+            }
+
+            return entities;
+        }
+        #endregion
+
     }
 }

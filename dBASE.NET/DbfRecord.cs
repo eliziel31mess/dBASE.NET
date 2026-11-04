@@ -1,10 +1,12 @@
 ﻿namespace dBASE.NET {
     using dBASE.NET.Encoders;
+    using dBASE.NET.V2;
     using System;
     using System.Collections.Generic;
     using System.Dynamic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
 
     /// <summary>
@@ -17,7 +19,12 @@
 
         public Dbf ParentDbf;
 
-        private List<DbfField> fields;
+        public List<DbfField> fields;
+
+        /// <summary>
+        /// Indicates whether this record is marked as deleted.
+        /// </summary>
+        public bool IsDeleted { get; internal set; }
 
         internal DbfRecord(BinaryReader reader, DbfHeader header, List<DbfField> fields, byte[] memoData, Encoding encoding) {
             this.fields = fields;
@@ -25,6 +32,7 @@
 
             // Read record marker.
             byte marker = reader.ReadByte();
+            IsDeleted = marker == 0x2A;
 
             // Read entire record as sequence of bytes.
             // Note that record length includes marker.
@@ -116,8 +124,8 @@
             BinaryWriter Memowriter = null;
             BinaryReader Memoreader = null;
             int UsedBlocks = 0, BlockSize = 0, FreeBlockPointer = 0;
-            // Write marker (always "not deleted")
-            writer.Write((byte)0x20);
+            // Write marker (deleted flag)
+            writer.Write((byte)(IsDeleted ? 0x2A : 0x20));
 
             int index = 0;
             HasMemo = fields.Any(f => f.Type == DbfFieldType.Memo);
@@ -186,5 +194,96 @@
                 Memoreader.Close();
             }
         }
+
+        #region Extends
+        /// <summary>
+        /// Return the index of the field by it's name.
+        /// </summary>
+        /// <param name="fieldName">Name of the field</param>
+        /// <returns></returns>
+        public int GetFieldIndex(string fieldName)
+        {
+            if (string.IsNullOrEmpty(fieldName)) return -1;
+            // Use OrdinalIgnoreCase so that corrupted tables with mixed-case field
+            // names (e.g. "Nt401" instead of "NT401") still map correctly.
+            // Also trim both sides to guard against stray whitespace/null chars.
+            string normalized = fieldName.Trim();
+            int index = fields.FindIndex(x =>
+                string.Compare(x.Name.Trim(), normalized, StringComparison.OrdinalIgnoreCase) == 0);
+            return index;
+        }
+        public void FromEntity<T>(T obj)
+        {
+            var properties = GetDecoratedProperties(obj);
+
+            foreach (var property in properties)
+            {
+                var attribute = property.GetCustomAttribute(typeof(DbfFieldAttribute)) as DbfFieldAttribute;
+
+                if (attribute == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property {property.Name} does not have the DbfField attribute!"
+                    );
+                }
+
+                if (property.CanRead)
+                {
+                    int fieldIndex = GetFieldIndex(attribute.Name);
+                    if (fieldIndex < 0 || fieldIndex >= Data.Count)
+                        continue;
+
+                    Data[fieldIndex] = property.GetValue(obj);
+                }
+            }
+        }
+
+        public void ToEntity<T>(T obj)
+        {
+            var properties = GetDecoratedProperties(obj);
+
+            foreach (var property in properties)
+            {
+                var attribute = property.GetCustomAttribute(typeof(DbfFieldAttribute)) as DbfFieldAttribute;
+
+                if (attribute == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Property {property.Name} does not have the DbfField attribute!"
+                    );
+                }
+
+                if (property.CanWrite)
+                {
+                    int fieldIndex = GetFieldIndex(attribute.Name);
+                    if (fieldIndex < 0 || fieldIndex >= Data.Count)
+                        continue;
+
+                    property.SetValue(obj, Data[fieldIndex]);
+                }
+            }
+        }
+
+        internal PropertyInfo[] GetDecoratedProperties(object obj)
+        {
+            var decoratedProperties = new List<PropertyInfo>();
+
+            var allProperties = obj.GetType().GetProperties();
+
+            foreach (var property in allProperties)
+            {
+                var attributes = property.GetCustomAttributes();
+                foreach (var attr in attributes)
+                {
+                    if (attr is DbfFieldAttribute)
+                    {
+                        decoratedProperties.Add(property);
+                    }
+                }
+            }
+
+            return decoratedProperties.ToArray();
+        }
+        #endregion
     }
 }

@@ -18,7 +18,9 @@
         public byte[] Encode(DbfField field, object data, Encoding encoding)
         {
             string text;
-            if (data is DateTime dt)
+            // DateTime.MinValue (01/01/0001) comes from uninitialized structs or
+            // corrupted records – treat it as empty, same as null.
+            if (data is DateTime dt && dt != DateTime.MinValue)
             {
                 text = dt.ToString(format).PadLeft(field.Length, ' ');
             }
@@ -33,9 +35,12 @@
         /// <inheritdoc />
         public object Decode(byte[] buffer, byte[] memoData, Encoding encoding)
         {
-            string text = encoding.GetString(buffer).Trim();
+            // Corrupted tables may store null bytes (\0) instead of spaces — strip both.
+            string text = encoding.GetString(buffer).Trim().Trim('\0');
             if (text.Length == 0) return null;
-            return DateTime.ParseExact(text, format, CultureInfo.InvariantCulture);
+            if (DateTime.TryParseExact(text, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+                return result;
+            return null;
         }
     }
 }
