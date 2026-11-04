@@ -61,7 +61,11 @@ namespace dBASE.NET.V2
 
                 if (property.CanWrite)
                 {
-                    property.SetValue(obj, Data[GetFieldIndex(attribute.Name)]);
+                    int fieldIndex = GetFieldIndex(attribute.Name);
+                    if (fieldIndex < 0 || fieldIndex >= Data.Count)
+                        continue;
+
+                    property.SetValue(obj, attribute.ApplyReadBehavior(Data[fieldIndex], fields[fieldIndex]));
                 }
             }
         }

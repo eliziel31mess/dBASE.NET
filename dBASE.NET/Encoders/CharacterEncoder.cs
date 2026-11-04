@@ -48,9 +48,9 @@
         /// <inheritdoc />
         public object Decode(byte[] buffer, byte[] memoData, Encoding encoding)
         {
-            string text = encoding.GetString(buffer).TrimEnd();
-            if (text.Length == 0) return null;
-            return text;
+            // Keep the fixed-width DBF value intact here. Trimming belongs to
+            // entity mapping, where DbfFieldAttribute can opt a property out.
+            return encoding.GetString(buffer);
         }
     }
 }

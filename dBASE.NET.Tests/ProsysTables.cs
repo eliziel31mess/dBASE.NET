@@ -191,5 +191,16 @@ namespace dBASE.NET.Tests
 
             Assert.IsNotNull(entities);
         }
+
+        [TestMethod]
+        public void KardexTable()
+        {
+            var tbl = "F:\\@Github\\dBASE.NET\\dBASE.NET.Tests\\fixtures\\Kardex\\TRA06_26.DBF";
+            dbf = new Dbf(Encoding.Default);
+            dbf.Read(tbl);
+            var entities = new List<Examples.Kardex>(dbf.GetEntities<Examples.Kardex>());
+
+            Assert.IsNotNull(entities);
+        }
     }
 }

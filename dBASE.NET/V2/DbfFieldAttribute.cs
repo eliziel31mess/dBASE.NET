@@ -18,6 +18,13 @@ namespace dBASE.NET.V2
         public string Name { get; private set; }
 
         /// <summary>
+        /// Gets or sets whether trailing spaces in a Character field should be
+        /// preserved when mapping this field to an entity property. By default,
+        /// trailing spaces are trimmed for compatibility with existing mappings.
+        /// </summary>
+        public bool PreserveTrailingSpaces { get; set; }
+
+        /// <summary>
         /// Create an attribute to be able to bind to a DBF field.
         /// </summary>
         /// <param name="name">
@@ -26,6 +33,15 @@ namespace dBASE.NET.V2
         public DbfFieldAttribute([CallerMemberName] string name = null)
         {
             Name = name;
+        }
+
+        internal object ApplyReadBehavior(object value, DbfField field)
+        {
+            if (PreserveTrailingSpaces || field?.Type != DbfFieldType.Character || !(value is string text))
+                return value;
+
+            text = text.TrimEnd();
+            return text.Length == 0 ? null : text;
         }
     }
 }

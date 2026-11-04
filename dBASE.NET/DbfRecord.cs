@@ -62,6 +62,11 @@
             foreach (DbfField field in fields) Data.Add(null);
         }
 
+        /// <summary>
+        /// Decoded values for this record. Character fields retain their full
+        /// fixed-width contents, including trailing spaces. Entity mapping trims
+        /// those spaces by default unless the mapped property opts out.
+        /// </summary>
         public List<object> Data { get; }
 
         public object this[int index] => Data[index];
@@ -259,7 +264,7 @@
                     if (fieldIndex < 0 || fieldIndex >= Data.Count)
                         continue;
 
-                    property.SetValue(obj, Data[fieldIndex]);
+                    property.SetValue(obj, attribute.ApplyReadBehavior(Data[fieldIndex], fields[fieldIndex]));
                 }
             }
         }

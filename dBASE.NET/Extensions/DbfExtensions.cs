@@ -148,6 +148,8 @@ namespace dBASE.NET.Extensions
                     if (kvp.Key.CanWrite)
                     {
                         var value = record.Data[kvp.Value];
+                        value = kvp.Key.GetCustomAttribute<DbfFieldAttribute>()
+                            .ApplyReadBehavior(value, dbf.Fields[kvp.Value]);
                         var propType = kvp.Key.PropertyType;
                         var underlyingType = Nullable.GetUnderlyingType(propType) ?? propType;
                         if (value == null)
